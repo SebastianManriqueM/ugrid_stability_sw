@@ -16,16 +16,45 @@ class Droop: #criar inner class basic data, etc
         self.w_fq = df_data.iloc[8]
         self.Rv   = df_data.iloc[9]
         self.Lv   = df_data.iloc[10]
+        self.get_lin_ss_model()
+        #self.get_nlin_ss_model() 
 
-        self.Ap   = self.get_ss_model()    
-        #self.Ap   = np.array([])
+    def get_nlin_ss_model1( y, t, b, c):
+        omega, theta = y
+        dydt =  omega     
+        return dydt
+    
+    def get_nlin_ss_model2( y, t, b, c):
+        omega, theta = y
+        dydt = -b*omega - c*np.sin(theta)    
+        return dydt
+    
+    #def func_agg( self, f_list ):
+    #    dydt = [ 0 , 0 ]
+    #    def wrapper(self, y, t, b, c):
+    #        for i, fun in enumerate(f_list):
+    #            dydt[i] = self.fun( y, t, b, c)
+    #        return dydt
+    #    return wrapper
+
+    def get_lin_ss_model( self ):
+        self.Ass      = np.array( [ [ 0 , -self.kp   , 0 ],
+                                    [ 0 , -self.w_fp , 0 ],
+                                    [ 0 ,  0         , -self.w_fq] ] )
+    
+
+        self.Bss_lc   = np.array( [ [ 0 , 0 ,     0      ,     0     ],
+                                    [ 0 , 0 , self.w_fp  , self.w_fp ],
+                                    [ 0 , 0 , -self.w_fp , self.w_fp ] ] )    
+
+        self.Bss_io   = np.array( [ [     0      ,     0     ],
+                                    [ self.w_fp  , self.w_fp ],
+                                    [ self.w_fp  ,-self.w_fp ] ] )
+
+        self.Bss_wcom = np.array( [ [ -1 ] , [ 0 ] , [ 0 ] ] )
+
+        self.Bss_pref = np.array( [ [ self.kp ] , [ 0 ], [ 0 ] ] )    
         
-    def get_ss_model( self ):
-        self.Ap = np.array( [ [ 0 , -self.kp   , 0 ],
-                              [ 0 , -self.w_fp , 0 ],
-                              [ 0 ,  0         , -self.w_fq] ] )
-            
-        return self.Ap
 
     
 
